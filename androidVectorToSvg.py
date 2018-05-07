@@ -23,6 +23,10 @@ def main(inputfile, outputfile):
         print("Failed:", e)
 
 
+def hasAttribute(element, name):
+    return "{{{}}}{}".format(namespace, name) in element.attrib
+
+
 def getAttribute(element, name):
     return element.attrib["{{{}}}{}".format(namespace, name)]
 
@@ -38,8 +42,34 @@ def createRoot(vector):
 
 def createPath(root, path):
     data = getAttribute(path, "pathData")
-    color = getAttribute(path, "fillColor")
-    child = etree.SubElement(root, "path", d=data, fill=color)
+    child = etree.SubElement(root, "path", d=data)
+
+    if hasAttribute(path, "fillColor"):
+        color = getAttribute(path, "fillColor")
+        child.set("fill", color)
+    else:
+        child.set("fill", "none")
+
+    if hasAttribute(path, "strokeColor"):
+        color = getAttribute(path, "strokeColor")
+        child.set("stroke", color)
+
+    if hasAttribute(path, "strokeWidth"):
+        width = getAttribute(path, "strokeWidth")
+        child.set("stroke-width", width)
+
+    if hasAttribute(path, "strokeLineJoin"):
+        join = getAttribute(path, "strokeLineJoin")
+        child.set("stroke-linejoin", join)
+
+    if hasAttribute(path, "strokeLineCap"):
+        cap = getAttribute(path, "strokeLineCap")
+        child.set("stroke-linecap", cap)
+
+    if hasAttribute(path, "strokeMiterLimit"):
+        lim = getAttribute(path, "strokeMiterLimit")
+        child.set("stroke-miterlimit", lim)
+
     return child
 
 
