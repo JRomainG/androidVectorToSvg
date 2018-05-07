@@ -14,6 +14,8 @@ def main(inputfile, outputfile):
         for child in root:
             if child.tag == "path":
                 createPath(newFile, child)
+            elif child.tag == "group":
+                createGroup(newFile, child)
             else:
                 pass
 
@@ -70,7 +72,20 @@ def createPath(root, path):
         lim = getAttribute(path, "strokeMiterLimit")
         child.set("stroke-miterlimit", lim)
 
-    return child
+
+def createGroup(root, group):
+    g = etree.SubElement(root, "g")
+
+    if hasAttribute(group, "translateX") and hasAttribute(group, "translateY"):
+        x = getAttribute(group, "translateX")
+        y = getAttribute(group, "translateY")
+        g.set("transform", "translate({}, {})".format(x, y))
+
+    for child in root:
+        if child.tag == "path":
+            createPath(g, child)
+        else:
+            pass
 
 
 def displayHelp():
