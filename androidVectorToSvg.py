@@ -6,7 +6,6 @@ from lxml import etree
 """
 TODO: - Add gradient color compatibility
       - Keep order of Android vector (right now, paths that were drawn on top are drawn at the bottom)
-      - Apply clipPaths even if not in a group
 """
 
 
@@ -72,6 +71,10 @@ def createPath(root, path):
     data = " ".join(data.split())  # Remove duplicate white-spaces
     child = etree.SubElement(root, "path", d=data)
 
+    if hasAttribute(path, "name"):
+        name = getAttribute(path, "name")
+        child.set("id", name)
+
     if hasAttribute(path, "fillColor"):
         color = getAttribute(path, "fillColor")
         child.set("fill", color)
@@ -113,6 +116,10 @@ def createPath(root, path):
 
 def createGroup(root, group):
     g = etree.SubElement(root, "g")
+
+    if hasAttribute(group, "name"):
+        name = getAttribute(group, "name")
+        g.set("id", name)
 
     # Initialize values to specs' defaults so setting them won't change anything visually by default
     translateX, translateY, rotate, pivotX, pivotY, scaleX, scaleY = 0, 0, 0, 0, 0, 1, 1
@@ -163,10 +170,7 @@ def createClipPath(root, clip):
     clipPaths.append(data)
 
     # Apply clipPath
-    if root.tag == "g":
-        root.set("clip-path", "url(#clipPath{})".format(pathID))
-    else:
-        print("clip path in main svg")
+    root.set("clip-path", "url(#clipPath{})".format(pathID))
 
 
 def displayHelp():
